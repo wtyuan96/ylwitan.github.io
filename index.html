@@ -348,7 +348,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-04-15 10:05:54" itemprop="dateModified" datetime="2019-04-15T10:05:54+08:00">2019-04-15</time>
+                <time title="Modified: 2019-04-15 10:14:37" itemprop="dateModified" datetime="2019-04-15T10:14:37+08:00">2019-04-15</time>
               
             
           </span>
@@ -436,8 +436,8 @@
 </tbody>
 </table>
 </div>
-<h3 id="更换主题"><a href="#更换主题" class="headerlink" title="更换主题"></a>更换主题</h3><p>默认主题为landscape，更换为next或其它主题。<br>下载主题命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/theme-next/hexo-theme-next</span><br></pre></td></tr></table></figure></p>
-<p>打开_config.yml文件，修改<code>theme</code>为<code>next</code>。然后运行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure></p>
+<h3 id="更换主题"><a href="#更换主题" class="headerlink" title="更换主题"></a>更换主题</h3><p>默认主题为landscape，更换为next或其它主题。<br>下载主题命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/theme-next/hexo-theme-next</span><br><span class="line">git pull</span><br></pre></td></tr></table></figure></p>
+<p>采用<code>git</code>命令克隆主题文件，以后更新可以通过<code>git pull</code>命令来快速更新，而不用再次下载安装包进行替换。<br>打开_config.yml文件，修改<code>theme</code>为<code>next</code>。然后运行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure></p>
 <p>打开<code>http://localhost:4000/</code>可以发现主题更改了。  </p>
 <h3 id="支持数学公式编辑"><a href="#支持数学公式编辑" class="headerlink" title="支持数学公式编辑"></a>支持数学公式编辑</h3><p>hexo默认的渲染引擎为marked，但是marked不支持mathjax，kramed是在marked的基础上进行修改，支持mathjax。<br>卸载marked，安装kramed:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm uninstall hexo-renderer-marked --save</span><br><span class="line">npm install hexo-renderer-kramed --save</span><br></pre></td></tr></table></figure></p>
 <p>更改<code>/node_modules/hexo-renderer-kramed/lib/renderer.js</code>：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// Change inline math rule</span><br><span class="line">function formatText(text) &#123;</span><br><span class="line">    // Fit kramed&apos;s rule: $$ + \1 + $$</span><br><span class="line">    return text.replace(/`\$(.*?)\$`/g, &apos;$$$$$1$$$$&apos;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
