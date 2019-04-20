@@ -354,6 +354,170 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://ylwitan.github.io/2019/04/20/ubuntu18-04-nvidiaDriver-cuda-cudnn-test/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ywt">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="blog-ywt">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/20/ubuntu18-04-nvidiaDriver-cuda-cudnn-test/" class="post-title-link" itemprop="url">ubuntu18.04_nvidiaDriver_cuda_cudnn_test</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-20 13:58:11 / 修改时间：15:11:19" itemprop="dateCreated datePublished" datetime="2019-04-20T13:58:11+08:00">2019-04-20</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="安装显卡驱动"><a href="#安装显卡驱动" class="headerlink" title="安装显卡驱动"></a>安装显卡驱动</h2><h3 id="安装前准备"><a href="#安装前准备" class="headerlink" title="安装前准备"></a>安装前准备</h3><p>查看显卡型号：<br><code>lspci | grep -i nvidia</code><br>输出：<br><code>01:00.0 3D controller: NVIDIA Corporation GM107M [GeForce GTX 850M] (rev a2)</code><br>查看nvidia显卡驱动版本：<br><code>nvidia-smi</code><br>输出：<br><img src="/2019/04/20/ubuntu18-04-nvidiaDriver-cuda-cudnn-test/1.png" title="nvidia显卡版本"><br>CUDA不同版本对显卡驱动版本的要求不同，见链接：<a href="https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html" target="_blank" rel="noopener">CUDA对应显卡版本</a>，具体如下图：<br><img src="/2019/04/20/ubuntu18-04-nvidiaDriver-cuda-cudnn-test/2.png" title="CUDA对应显卡版本"><br>如果显卡驱动版本与你要安装的CUDA版本不匹配，则需要更新显卡驱动。我的显卡版本是ubuntu18.04自带的390版本，需要更新到新版本。<br>首先卸载已有显卡驱动：<br><code>sudo apt-get --purge remove nvidia-*</code><br>其次查看是否已经禁用开源驱动：<br><code>lsmod | grep nouveau</code><br>如果什么也没返回，说明nouveau已经禁用了。<br>而如果没有禁用，则可通过编辑系统配置文件进行禁用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vim /etc/modprobe.d/blacklist.conf</span><br></pre></td></tr></table></figure></p>
+<p>在最后添加：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">blcaklist nouveau</span><br><span class="line">options nouveau modeset=0</span><br></pre></td></tr></table></figure></p>
+<p>保存，退出，执行如下命令使配置生效：<br><code>sudo update-initramfs -u</code><br>重新检查nouveau是否被禁用，如有必要可重启电脑。</p>
+<h3 id="正式安装驱动"><a href="#正式安装驱动" class="headerlink" title="正式安装驱动"></a>正式安装驱动</h3><p>我刚开始尝试了ppa安装显卡驱动，但是ppa源下载得实在是太慢了。故到<a href="https://www.nvidia.cn/Download/index.aspx?lang=cn" target="_blank" rel="noopener">nvidia驱动网址</a>下载自己显卡对应的驱动文件，然后运行：<br><code>sudo ./NVIDIA-Linux-x86_64-418.56.run</code>进行安装。<br>期间会出现一些诸如gcc版本不匹配的问题，nvidia-418.56是通过gcc-7.3编译的，而我的电脑上是gcc-7.4，不过貌似不影响。<br>安装完成后，通过<code>nvidia-smi</code>查看是否安装成功。</p>
+<h2 id="安装CUDA"><a href="#安装CUDA" class="headerlink" title="安装CUDA"></a>安装CUDA</h2><p>详细的安装教程见<a href="https://developer.download.nvidia.cn/compute/cuda/10.0/Prod/docs/sidebar/CUDA_Installation_Guide_Linux.pdf" target="_blank" rel="noopener">CUDA_Installation_Guide_Linux</a>，这里只介绍比较简略的通用流程。</p>
+<h3 id="安装前检查"><a href="#安装前检查" class="headerlink" title="安装前检查"></a>安装前检查</h3><p>首先是安装前检查(一般可以跳过下列步骤)：</p>
+<ol>
+<li>确定电脑上有支持CUDA的GPU。查看GPU型号：<code>lspci | grep -i nvidia</code>，支持CUDA的GPU列表：<a href="https://developer.nvidia.com/cuda-gpus" target="_blank" rel="noopener">cuda-gpus</a></li>
+<li>确定Liunx系统支持CUDA。查看linux发型版本：<code>uname -m &amp;&amp; cat /etc/*release</code>。  <img src="/2019/04/20/ubuntu18-04-nvidiaDriver-cuda-cudnn-test/3.png" title="CUDA 10.0支持的linux发行版">  </li>
+<li>确定有支持的gcc版本，查看gcc版本：<code>gcc --version</code></li>
+<li>确定由安装了Correct Kernel Headers 和 Development Packages，查看kernel版本：<code>uname -r</code>，安装kernel headers and development packages：<code>sudo apt-get install linux-headers-$(uname -r)</code>。  </li>
+</ol>
+<h3 id="正式安装CUDA"><a href="#正式安装CUDA" class="headerlink" title="正式安装CUDA"></a>正式安装CUDA</h3><p>下载CUDA Toolkit，网址：<a href="https://developer.nvidia.com/cuda-downloads" target="_blank" rel="noopener">cuda-downloads</a>。官方推荐下载distribution-specific packages，即RPM、Deb包，但是我这里是下载run文件。</p>
+<p>如果以前安装过CUDA，可能要采取一些操作，具体参考文章开头给出的官方详细的安装文档。<br>下载好以后，直接运行<code>sudo ./cuda_&lt;version&gt;_linux.run</code>，安装过程中会询问是否安装显卡，由于我们之前安装过显卡，选择不安装。结束后，cuda会被安装在<code>/usr/local/cuda-10.0</code>文件夹下。例程会被安装在<code>$(HOME)/NVIDIA_CUDA-10.0_Samples</code>，在<code>/usr/local/cuda-10.0/samples</code>文件夹下有同样的例程文件。<br>安装程序在结束时会提示你设置环境变量，打开<code>～/.bashrc</code>文件，在最后添加：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export PATH=/usr/local/cuda-10.0/bin:$PATH</span><br><span class="line">export LD_LIBRARY_PATH=/usr/local/cuda-10.0/lib64:$LD_LIBRARY_PATH</span><br></pre></td></tr></table></figure></p>
+<p>具体环境变量的设置根据安装程序的提示进行操作。</p>
+<h3 id="测试CUDA"><a href="#测试CUDA" class="headerlink" title="测试CUDA"></a>测试CUDA</h3><p>运行例程：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd $CUDA_HOME/samples/1_Utilities/deviceQuery</span><br><span class="line">sudo make</span><br><span class="line">./deviceQuery</span><br></pre></td></tr></table></figure></p>
+<p>若出现，<code>Result = PASS</code>说明安装成功。<br>还可以test另一个程序，运行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd $CUDA_HOME/samples/5_Simulations/fluidsGL</span><br><span class="line">sudo make</span><br><span class="line">./fluidsGL</span><br></pre></td></tr></table></figure></p>
+<p>可以看到下图：<br><img src="/2019/04/20/ubuntu18-04-nvidiaDriver-cuda-cudnn-test/4.png"><br>运行<code>nvidia-smi</code>可以看到显卡正在工作：<br><img src="/2019/04/20/ubuntu18-04-nvidiaDriver-cuda-cudnn-test/5.png">  </p>
+<h2 id="安装CUDNN"><a href="#安装CUDNN" class="headerlink" title="安装CUDNN"></a>安装CUDNN</h2><h3 id="下载并安装"><a href="#下载并安装" class="headerlink" title="下载并安装"></a>下载并安装</h3><p>从<a href="https://developer.nvidia.com/cudnn" target="_blank" rel="noopener">cudnn</a>下载以下文件：<br><img src="/2019/04/20/ubuntu18-04-nvidiaDriver-cuda-cudnn-test/6.png"><br>然后运行命令：<code>sudo dpkg -i &lt;filename&gt;.deb</code>把三个包全部安装。</p>
+<h3 id="测试CUDNN"><a href="#测试CUDNN" class="headerlink" title="测试CUDNN"></a>测试CUDNN</h3><p>执行命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo cp -r /usr/src/cudnn_samples_v7/ $HOME</span><br><span class="line">cd $HOME/cudnn_samples_v7/mnistCUDNN</span><br><span class="line">sudo make clean</span><br><span class="line">sudo make</span><br><span class="line">sudo ./mnistCUDNN</span><br></pre></td></tr></table></figure></p>
+<p>若出现<code>Test passed</code>说明CUDNN安装成功。</p>
+<p><strong>至此，ubuntu18.04下cuda、cudnn全部安装完成，接下来就可以配置相应的深度学习开发环境了。</strong></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://ylwitan.github.io/2019/04/12/ubuntu+github+hexo搭建个人博客/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -613,7 +777,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">1</span>
+                    <span class="site-state-item-count">2</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -805,6 +969,8 @@
 
   
   
+    
+      
     
       
         
