@@ -354,6 +354,155 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://ylwitan.github.io/2019/05/18/Windows-Ubuntu双系统，Ubuntu系统扩容/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ywt">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="blog-ywt">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/18/Windows-Ubuntu双系统，Ubuntu系统扩容/" class="post-title-link" itemprop="url">Windows+Ubuntu双系统，Ubuntu系统扩容</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-18 19:17:28 / 修改时间：19:48:21" itemprop="dateCreated datePublished" datetime="2019-05-18T19:17:28+08:00">2019-05-18</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>Windows 10下安装了Ubuntu双系统，刚开始给Ubuntu分配了100G的空间，但是用了几个月发现100G开始不太够用了，遂考虑给Ubuntu加50G空间，记录过程如下。<br>参考原文链接：<a href="https://www.howtogeek.com/114503/how-to-resize-your-ubuntu-partitions/" target="_blank" rel="noopener">How to Resize Your Ubuntu Partitions</a>，在此翻译总结一下主要流程。<br>无论是给扩大还是缩小Ubuntu系统容量，抑或是更改系统分区，都必须在Ubuntu系统不运行的情况下。所以你需要制作一个Ubuntu的启动盘来更改系统分区。<br>目前Ubuntu的启动盘都包含GParted分区编辑软件（Ubuntu18.04确定含有）。</p>
+<h3 id="制作Ubuntu启动盘"><a href="#制作Ubuntu启动盘" class="headerlink" title="制作Ubuntu启动盘"></a>制作Ubuntu启动盘</h3><p>制作启动盘的软件有很多，这里采用UltraISO，首先从<a href="https://www.ubuntu.com/download/desktop" target="_blank" rel="noopener">Ubuntu官网</a>下载Ubuntu18.04的镜像文件，然后找一个空的U盘（或里面内容没啥用的U盘），然后用UltraISO制作启动盘，制作系统盘的教程网上很多，在此不详述。</p>
+<h3 id="设置U盘启动并使用GParted进行分区调整"><a href="#设置U盘启动并使用GParted进行分区调整" class="headerlink" title="设置U盘启动并使用GParted进行分区调整"></a>设置U盘启动并使用GParted进行分区调整</h3><p>首先进BIOS设置从U盘启动，接下来会进入Ubuntu系统。<br>在Dash中输入GParted，打开GParted软件。<br><img src="/2019/05/18/Windows-Ubuntu双系统，Ubuntu系统扩容/1.png" title="Dash搜索GParted"><br>首先需要关闭交换分区（swap partition），右击，点击Swap off。<br><img src="/2019/05/18/Windows-Ubuntu双系统，Ubuntu系统扩容/2.png" title="关闭交换分区"><br>右击某个分区，然后点击Resize/Move来更改分区。<br><img src="/2019/05/18/Windows-Ubuntu双系统，Ubuntu系统扩容/3.png" title="更改分区大小"><br>最简单的修改分区大小的方式就是直接点击并拖动滚动条，当然也可以直接输入准确的数字来改变大小。<br><img src="/2019/05/18/Windows-Ubuntu双系统，Ubuntu系统扩容/4.png" title="改变分区大小"><br>你对于分区的改动不会立即生效。你做的每一个改动都会进入一个队列，并在GParted窗口的下面展示出来。<br><img src="/2019/05/18/Windows-Ubuntu双系统，Ubuntu系统扩容/5.png" title="GParted改动队列"><br>一旦你缩小了一个分区，你可以用未分配的空间新建一个分区，直接右击未分配的空间，然后选择New，GParted会指导你创建新分区。<br><img src="/2019/05/18/Windows-Ubuntu双系统，Ubuntu系统扩容/6.png" title="创建新分区"><br>如果一个分区与未分配的空间临近，可以直接右击这个分区，然后选择Resize/Move，将未分配的空间分配进这个分区。<br>如果更改了Ubuntu的开始扇区（或者更改了Ubuntu的分区数量）,Ubuntu可以不能boot，可以通过重新安装Grub2来解决这个问题，参见<a href="https://help.ubuntu.com/community/Grub2/Installing#Fixing_a_Broken_System" target="_blank" rel="noopener">修复Grub2引导</a><br><img src="/2019/05/18/Windows-Ubuntu双系统，Ubuntu系统扩容/7.png" title="Warning"><br>最后需要点击绿色对号图标来使你的改动生效。<br><img src="/2019/05/18/Windows-Ubuntu双系统，Ubuntu系统扩容/8.png" title="使改动生效"><br>Tips:  </p>
+<ol>
+<li>我们通常扩容的是Home分区或者/分区（这两个分区也可以是一个分区），所以如果是双系统的话，在安装Ubuntu系统的时候，把Home分区或者/分区分配在靠近Windows分区的位置，这样以后更改分区可以直接缩小Windows分区，然后并入Home分区或者/分区，这样GParted在调整分区时会免去复制文件的过程，更节省时间。</li>
+<li>如果单纯缩小某个分区，然后扩大另一个分区，而不改变分区位置和数量的话，不会出现无法boot的现象。</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://ylwitan.github.io/2019/04/20/anaconda下安装pytorch/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -938,7 +1087,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-count">4</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1130,6 +1279,8 @@
 
   
   
+    
+      
     
       
     
