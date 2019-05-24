@@ -354,6 +354,162 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://ylwitan.github.io/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ywt">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="blog-ywt">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/" class="post-title-link" itemprop="url">Ubuntu下源码编译opencv(支持Nonfree和CUDA)</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-24 21:07:30 / 修改时间：22:55:08" itemprop="dateCreated datePublished" datetime="2019-05-24T21:07:30+08:00">2019-05-24</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>本文主要记录一下Ubuntu下源码编译安装Opencv的过程，如果只用安装opencv-python，推荐使用pip安装。</p>
+<h2 id="Required-Packages"><a href="#Required-Packages" class="headerlink" title="Required Packages"></a>Required Packages</h2><img src="/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/requiredPackages.png" title="Required Packages">
+<p>不同版本的Opencv需要的依赖包可能不一样，上图是Opencv3.4.3所需要的依赖包。具体参考<a href="https://docs.opencv.org/3.4.3/d7/d9f/tutorial_linux_install.html" target="_blank" rel="noopener">官方源码编译教程</a><br>通过以下命令安装：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[compiler] sudo apt-get install build-essential</span><br><span class="line">[required] sudo apt-get install cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev</span><br><span class="line">[optional] sudo apt-get install python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev</span><br></pre></td></tr></table></figure></p>
+<p>虽然第三部分为可选，但最好全部安装一遍，如果遇到找不到的包，上网找一下原因，是否是版本号问题还是这个包停止更新（改名了）。<br>由于我们要安装支持CUDA的Opencv，所以需要提前将Cuda和CUDNN安装好，安装教程见<a href="https://ylwitan.github.io/2019/04/20/ubuntu18-04-nvidiaDriver-cuda-cudnn-test/">Ubuntu下安装nvidia驱动、CUDA、CUDNN</a><br>到此，安装前的准备工作完成。</p>
+<h2 id="下载Opencv源码"><a href="#下载Opencv源码" class="headerlink" title="下载Opencv源码"></a>下载Opencv源码</h2><p>到<a href="https://opencv.org/releases/" target="_blank" rel="noopener">下载界面</a>下载对应版本的Opencv源码，推荐直接用git命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd ~/Downloads</span><br><span class="line">git clone https://github.com/opencv/opencv.git</span><br><span class="line">git clone https://github.com/opencv/opencv_contrib.git</span><br></pre></td></tr></table></figure></p>
+<p>其中，opencv为官方发布库，opencv_contrib是扩展库，opencv_contrib中含有一些不那么稳定且未经过全面测试的API，计算机视觉中常用的sift算法就包含在opencv_contrib库中。</p>
+<h2 id="用CMake编译Opencv源码"><a href="#用CMake编译Opencv源码" class="headerlink" title="用CMake编译Opencv源码"></a>用CMake编译Opencv源码</h2><p>首先创建编译的临时文件夹：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd opencv</span><br><span class="line">mkdir build</span><br><span class="line">cd build</span><br></pre></td></tr></table></figure></p>
+<p>执行CMake命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D OPENCV_EXTRA_MODULES_PATH=/home/ywt/Downloads/SOFTWARE/opencv_contrib-3.4.3/modules -D OPENCV_ENABLE_NONFREE=ON -D FORCE_VTK=ON -D WITH_TBB=ON -D WITH_V4L=ON -D WITH_QT=ON -D WITH_OPENGL=ON -D WITH_CUBLAS=ON -D CUDA_NVCC_FLAGS=&quot;-D_FORCE_INLINES --expt-relaxed-constexpr&quot; -D WITH_GDAL=ON -D WITH_CUDA=ON -D WITH_XINE=ON ..</span><br></pre></td></tr></table></figure></p>
+<p>其中，<br><code>-D CMAKE_INSTALL_PREFIX=/usr/local</code>：表示安装路径为<code>/usr/local</code><br><code>-D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-3.4.3/modules</code>：表示安装opencv_contrib扩展库，并指定opencv_contrib模块的路径。<br><code>-D OPENCV_ENABLE_NONFREE=ON</code>：表示安装有专利的函数，譬如要想使用sift算法就必须enable这个选项，否则会报错：This algorithm is patented and is excluded in this configuration; Set OPENCV_ENABLE_NONFREE CMake option and rebuild the library in function ‘create’。<br><code>-D WITH_CUDA=ON -D WITH_CUBLAS=ON -D CUDA_NVCC_FLAGS=&quot;-D_FORCE_INLINES --expt-relaxed-constexpr&quot;</code>：表示安装支持CUDA的Opencv.。<br>其它安装选项可以参考，表示使Opencv分别支持对应的功能，如果以后想省事，可能这时候就需要多选几个了，上面提到的几个必选。<br>执行CMake命令后，命令行会输出Opencv的安装Configuration信息：<br><img src="/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/configuration1.png" title="安装configuration信息"><br>命令行还会输出找到的CUDA版本：<br><img src="/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/configuration2.png" title="CUDA版本"><br>CMake执行成功会输出以下信息：<br><img src="/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/configuration3.png" title="CMake执行成功"><br>然后进行编译即可：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo make -j8 # j8表示最多允许8个编译命令同时运行，在多核CPU上并行编译可以显著提升编译速度。</span><br></pre></td></tr></table></figure></p>
+<p>编译支持CUDA的Opencv一般会非常耗时，一般一个小时左右应该是要的（取决于电脑性能）。<br>编译完成后可以采用<code>sudo make install</code>进行安装，但是make install安装有一个问题就是需要保留build文件夹才能较为完整地卸载所安装的软件，而Opencv编译后的build文件夹有十多个G，所以十分占用空间，在这里考虑使用Checkinstall代替make install。<br>Checkinstall是将源码转换成deb或者rpm包的工具，操作简单。在编译完成后，首先修改一下checkinstall的配置文件checkinstallrc，可以通过<code>whereis checkinstallrc</code>查找此文件的位置，打开文件修改BACKUP变量为0（默认为1），这个变量控制在checkinstall过程中是否保存备份文件，由于Opencv编译生成的文件太大，保存备份文件会很耗时，所以选择不保存备份文件。<br>修改完checkinstall的配置文件后，直接运行<code>sudo checkinstall</code>即可，会在build目录下生成一个.deb包，此时Opencv已经安装上了，以后如果需要删除Opencv，直接运行：<code>sudo dpkg -r build</code>，而如果要安装直接运行<code>sudo dpkg -i build_xxx.deb</code>即可。</p>
+<h2 id="测试Opencv"><a href="#测试Opencv" class="headerlink" title="测试Opencv"></a>测试Opencv</h2><p>测试代码main.cpp：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;opencv2/opencv.hpp&gt;</span><br><span class="line"></span><br><span class="line">using namespace cv;</span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">    cout &lt;&lt; &quot;CUDA Device Info&quot; &lt;&lt; endl;</span><br><span class="line">    cv::cuda::printShortCudaDeviceInfo(cv::cuda::getDevice());</span><br><span class="line">    Mat image = imread(&quot;../lena.jpg&quot;, CV_LOAD_IMAGE_UNCHANGED);</span><br><span class="line">    if(image.empty())</span><br><span class="line">    &#123;</span><br><span class="line">            cout &lt;&lt; &quot;Can&apos;t read images&quot; &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    namedWindow(&quot;lena&quot;, cv::WINDOW_NORMAL);</span><br><span class="line">    imshow(&quot;lena&quot;, image);</span><br><span class="line">    cvWaitKey();</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>执行以上代码，需要将一张图像放在main.cpp同目录下，CMakeLists.txt文件如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required(VERSION 2.8)</span><br><span class="line">project(opencvTest) # 工程名称</span><br><span class="line"></span><br><span class="line">set(CMAKE_CXX_STANDARD 14) # C++语言标准</span><br><span class="line"></span><br><span class="line">set(CMAKE_BUILD_TYPE &quot;Debug&quot;) # 允许Debug</span><br><span class="line"></span><br><span class="line">find_package(OpenCV REQUIRED) # 寻找Opencv依赖</span><br><span class="line"></span><br><span class="line">aux_source_directory( . DIR_SRCS ) # 添加source文件</span><br><span class="line"></span><br><span class="line">add_executable($&#123;PROJECT_NAME&#125; $&#123;DIR_SRCS&#125;) # 生成可执行文件</span><br><span class="line"></span><br><span class="line">target_link_libraries( $&#123;PROJECT_NAME&#125; $&#123;OpenCV_LIBS&#125; ) # 链接库</span><br></pre></td></tr></table></figure></p>
+<p>执行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mkdir build</span><br><span class="line">cd build </span><br><span class="line">cmake ..</span><br><span class="line">make</span><br><span class="line">./opencvTest</span><br></pre></td></tr></table></figure></p>
+<p>命令行输出显卡信息：<br><img src="/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/cudaInfo.png" title="CUDA Device info"><br>显示图像：<br><img src="/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/lena.png" title="显示图像"><br>至此，支持Nonfree的函数以及CUDA的Opencv配置完成。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://ylwitan.github.io/2019/05/18/Windows-Ubuntu双系统，Ubuntu系统扩容/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1087,7 +1243,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-count">5</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1279,6 +1435,8 @@
 
   
   
+    
+      
     
       
     

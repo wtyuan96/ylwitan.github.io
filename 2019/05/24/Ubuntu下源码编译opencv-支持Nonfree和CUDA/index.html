@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="本文主要记录一下Ubuntu下源码编译安装Opencv的过程，如果只用安装opencv-python，推荐使用pip安装。 Required Packages 不同版本的Opencv需要的依赖包可能不一样，上图是Opencv3.4.3所需要的依赖包。具体参考官方源码编译教程通过以下命令安装：123[compiler] sudo apt-get install build-essential[req">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu下源码编译opencv(支持Nonfree和CUDA)">
+<meta property="og:url" content="http://ylwitan.github.io/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/index.html">
+<meta property="og:site_name" content="blog-ywt">
+<meta property="og:description" content="本文主要记录一下Ubuntu下源码编译安装Opencv的过程，如果只用安装opencv-python，推荐使用pip安装。 Required Packages 不同版本的Opencv需要的依赖包可能不一样，上图是Opencv3.4.3所需要的依赖包。具体参考官方源码编译教程通过以下命令安装：123[compiler] sudo apt-get install build-essential[req">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://ylwitan.github.io/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/requiredPackages.png">
+<meta property="og:image" content="http://ylwitan.github.io/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/configuration1.png">
+<meta property="og:image" content="http://ylwitan.github.io/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/configuration2.png">
+<meta property="og:image" content="http://ylwitan.github.io/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/configuration3.png">
+<meta property="og:image" content="http://ylwitan.github.io/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/cudaInfo.png">
+<meta property="og:image" content="http://ylwitan.github.io/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/lena.png">
+<meta property="og:updated_time" content="2019-05-24T14:55:08.663Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ubuntu下源码编译opencv(支持Nonfree和CUDA)">
+<meta name="twitter:description" content="本文主要记录一下Ubuntu下源码编译安装Opencv的过程，如果只用安装opencv-python，推荐使用pip安装。 Required Packages 不同版本的Opencv需要的依赖包可能不一样，上图是Opencv3.4.3所需要的依赖包。具体参考官方源码编译教程通过以下命令安装：123[compiler] sudo apt-get install build-essential[req">
+<meta name="twitter:image" content="http://ylwitan.github.io/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/requiredPackages.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://ylwitan.github.io/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Ubuntu下源码编译opencv(支持Nonfree和CUDA) | blog-ywt</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">blog-ywt</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-search">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/search" rel="section"><i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>搜索</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://ylwitan.github.io/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ywt">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="blog-ywt">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Ubuntu下源码编译opencv(支持Nonfree和CUDA)
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-24 21:07:30 / 修改时间：22:55:08" itemprop="dateCreated datePublished" datetime="2019-05-24T21:07:30+08:00">2019-05-24</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文主要记录一下Ubuntu下源码编译安装Opencv的过程，如果只用安装opencv-python，推荐使用pip安装。</p>
+<h2 id="Required-Packages"><a href="#Required-Packages" class="headerlink" title="Required Packages"></a>Required Packages</h2><img src="/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/requiredPackages.png" title="Required Packages">
+<p>不同版本的Opencv需要的依赖包可能不一样，上图是Opencv3.4.3所需要的依赖包。具体参考<a href="https://docs.opencv.org/3.4.3/d7/d9f/tutorial_linux_install.html" target="_blank" rel="noopener">官方源码编译教程</a><br>通过以下命令安装：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[compiler] sudo apt-get install build-essential</span><br><span class="line">[required] sudo apt-get install cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev</span><br><span class="line">[optional] sudo apt-get install python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev</span><br></pre></td></tr></table></figure></p>
+<p>虽然第三部分为可选，但最好全部安装一遍，如果遇到找不到的包，上网找一下原因，是否是版本号问题还是这个包停止更新（改名了）。<br>由于我们要安装支持CUDA的Opencv，所以需要提前将Cuda和CUDNN安装好，安装教程见<a href="https://ylwitan.github.io/2019/04/20/ubuntu18-04-nvidiaDriver-cuda-cudnn-test/">Ubuntu下安装nvidia驱动、CUDA、CUDNN</a><br>到此，安装前的准备工作完成。</p>
+<h2 id="下载Opencv源码"><a href="#下载Opencv源码" class="headerlink" title="下载Opencv源码"></a>下载Opencv源码</h2><p>到<a href="https://opencv.org/releases/" target="_blank" rel="noopener">下载界面</a>下载对应版本的Opencv源码，推荐直接用git命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd ~/Downloads</span><br><span class="line">git clone https://github.com/opencv/opencv.git</span><br><span class="line">git clone https://github.com/opencv/opencv_contrib.git</span><br></pre></td></tr></table></figure></p>
+<p>其中，opencv为官方发布库，opencv_contrib是扩展库，opencv_contrib中含有一些不那么稳定且未经过全面测试的API，计算机视觉中常用的sift算法就包含在opencv_contrib库中。</p>
+<h2 id="用CMake编译Opencv源码"><a href="#用CMake编译Opencv源码" class="headerlink" title="用CMake编译Opencv源码"></a>用CMake编译Opencv源码</h2><p>首先创建编译的临时文件夹：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd opencv</span><br><span class="line">mkdir build</span><br><span class="line">cd build</span><br></pre></td></tr></table></figure></p>
+<p>执行CMake命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D OPENCV_EXTRA_MODULES_PATH=/home/ywt/Downloads/SOFTWARE/opencv_contrib-3.4.3/modules -D OPENCV_ENABLE_NONFREE=ON -D FORCE_VTK=ON -D WITH_TBB=ON -D WITH_V4L=ON -D WITH_QT=ON -D WITH_OPENGL=ON -D WITH_CUBLAS=ON -D CUDA_NVCC_FLAGS=&quot;-D_FORCE_INLINES --expt-relaxed-constexpr&quot; -D WITH_GDAL=ON -D WITH_CUDA=ON -D WITH_XINE=ON ..</span><br></pre></td></tr></table></figure></p>
+<p>其中，<br><code>-D CMAKE_INSTALL_PREFIX=/usr/local</code>：表示安装路径为<code>/usr/local</code><br><code>-D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-3.4.3/modules</code>：表示安装opencv_contrib扩展库，并指定opencv_contrib模块的路径。<br><code>-D OPENCV_ENABLE_NONFREE=ON</code>：表示安装有专利的函数，譬如要想使用sift算法就必须enable这个选项，否则会报错：This algorithm is patented and is excluded in this configuration; Set OPENCV_ENABLE_NONFREE CMake option and rebuild the library in function ‘create’。<br><code>-D WITH_CUDA=ON -D WITH_CUBLAS=ON -D CUDA_NVCC_FLAGS=&quot;-D_FORCE_INLINES --expt-relaxed-constexpr&quot;</code>：表示安装支持CUDA的Opencv.。<br>其它安装选项可以参考，表示使Opencv分别支持对应的功能，如果以后想省事，可能这时候就需要多选几个了，上面提到的几个必选。<br>执行CMake命令后，命令行会输出Opencv的安装Configuration信息：<br><img src="/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/configuration1.png" title="安装configuration信息"><br>命令行还会输出找到的CUDA版本：<br><img src="/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/configuration2.png" title="CUDA版本"><br>CMake执行成功会输出以下信息：<br><img src="/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/configuration3.png" title="CMake执行成功"><br>然后进行编译即可：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo make -j8 # j8表示最多允许8个编译命令同时运行，在多核CPU上并行编译可以显著提升编译速度。</span><br></pre></td></tr></table></figure></p>
+<p>编译支持CUDA的Opencv一般会非常耗时，一般一个小时左右应该是要的（取决于电脑性能）。<br>编译完成后可以采用<code>sudo make install</code>进行安装，但是make install安装有一个问题就是需要保留build文件夹才能较为完整地卸载所安装的软件，而Opencv编译后的build文件夹有十多个G，所以十分占用空间，在这里考虑使用Checkinstall代替make install。<br>Checkinstall是将源码转换成deb或者rpm包的工具，操作简单。在编译完成后，首先修改一下checkinstall的配置文件checkinstallrc，可以通过<code>whereis checkinstallrc</code>查找此文件的位置，打开文件修改BACKUP变量为0（默认为1），这个变量控制在checkinstall过程中是否保存备份文件，由于Opencv编译生成的文件太大，保存备份文件会很耗时，所以选择不保存备份文件。<br>修改完checkinstall的配置文件后，直接运行<code>sudo checkinstall</code>即可，会在build目录下生成一个.deb包，此时Opencv已经安装上了，以后如果需要删除Opencv，直接运行：<code>sudo dpkg -r build</code>，而如果要安装直接运行<code>sudo dpkg -i build_xxx.deb</code>即可。</p>
+<h2 id="测试Opencv"><a href="#测试Opencv" class="headerlink" title="测试Opencv"></a>测试Opencv</h2><p>测试代码main.cpp：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;opencv2/opencv.hpp&gt;</span><br><span class="line"></span><br><span class="line">using namespace cv;</span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">    cout &lt;&lt; &quot;CUDA Device Info&quot; &lt;&lt; endl;</span><br><span class="line">    cv::cuda::printShortCudaDeviceInfo(cv::cuda::getDevice());</span><br><span class="line">    Mat image = imread(&quot;../lena.jpg&quot;, CV_LOAD_IMAGE_UNCHANGED);</span><br><span class="line">    if(image.empty())</span><br><span class="line">    &#123;</span><br><span class="line">            cout &lt;&lt; &quot;Can&apos;t read images&quot; &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    namedWindow(&quot;lena&quot;, cv::WINDOW_NORMAL);</span><br><span class="line">    imshow(&quot;lena&quot;, image);</span><br><span class="line">    cvWaitKey();</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>执行以上代码，需要将一张图像放在main.cpp同目录下，CMakeLists.txt文件如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required(VERSION 2.8)</span><br><span class="line">project(opencvTest) # 工程名称</span><br><span class="line"></span><br><span class="line">set(CMAKE_CXX_STANDARD 14) # C++语言标准</span><br><span class="line"></span><br><span class="line">set(CMAKE_BUILD_TYPE &quot;Debug&quot;) # 允许Debug</span><br><span class="line"></span><br><span class="line">find_package(OpenCV REQUIRED) # 寻找Opencv依赖</span><br><span class="line"></span><br><span class="line">aux_source_directory( . DIR_SRCS ) # 添加source文件</span><br><span class="line"></span><br><span class="line">add_executable($&#123;PROJECT_NAME&#125; $&#123;DIR_SRCS&#125;) # 生成可执行文件</span><br><span class="line"></span><br><span class="line">target_link_libraries( $&#123;PROJECT_NAME&#125; $&#123;OpenCV_LIBS&#125; ) # 链接库</span><br></pre></td></tr></table></figure></p>
+<p>执行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mkdir build</span><br><span class="line">cd build </span><br><span class="line">cmake ..</span><br><span class="line">make</span><br><span class="line">./opencvTest</span><br></pre></td></tr></table></figure></p>
+<p>命令行输出显卡信息：<br><img src="/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/cudaInfo.png" title="CUDA Device info"><br>显示图像：<br><img src="/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/lena.png" title="显示图像"><br>至此，支持Nonfree的函数以及CUDA的Opencv配置完成。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/18/Windows-Ubuntu双系统，Ubuntu系统扩容/" rel="next" title="Windows+Ubuntu双系统，Ubuntu系统扩容">
+                <i class="fa fa-chevron-left"></i> Windows+Ubuntu双系统，Ubuntu系统扩容
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="ywt">
+            
+              <p class="site-author-name" itemprop="name">ywt</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Required-Packages"><span class="nav-number">1.</span> <span class="nav-text">Required Packages</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#下载Opencv源码"><span class="nav-number">2.</span> <span class="nav-text">下载Opencv源码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用CMake编译Opencv源码"><span class="nav-number">3.</span> <span class="nav-text">用CMake编译Opencv源码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试Opencv"><span class="nav-number">4.</span> <span class="nav-text">测试Opencv</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ywt</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.0"></script>
+
+  <script src="/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
