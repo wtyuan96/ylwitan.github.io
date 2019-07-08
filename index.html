@@ -340,6 +340,189 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://ylwitan.github.io/2019/07/08/Windows10下编译opencv3-4-3（支持Nonfree）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ywt">
+      <meta itemprop="description" content="输出知识是巩固知识的有效方式">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="blog-ywt">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/07/08/Windows10下编译opencv3-4-3（支持Nonfree）/" class="post-title-link" itemprop="url">Windows10下编译opencv3.4.3（支持Nonfree）</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-08 20:05:11 / 修改时间：21:39:07" itemprop="dateCreated datePublished" datetime="2019-07-08T20:05:11+08:00">2019-07-08</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/各种环境配置/" itemprop="url" rel="index"><span itemprop="name">各种环境配置</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>本文主要记录如何在Windows10下编译opencv3.4.3，并支持sift、surf等Nonfree的函数。</p>
+<h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><p>需要安装三个软件：TDM64-GCC(<a href="http://tdm-gcc.tdragon.net/download" target="_blank" rel="noopener">tdm64-gcc-5.1.0-2.exe</a>)、CMake(<a href="https://cmake.org/download/" target="_blank" rel="noopener">cmake-3.15.0-rc3-win64-x64.msi</a>)、Git(<a href="https://git-scm.com/download/win" target="_blank" rel="noopener">64-bit</a>)<br>源码下载：一定要保证contrib和opencv的版本一致！！！<br>打开Windows命令行，进入要下载的目录(如opencv-3.4.3)，输入以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/opencv/opencv.git</span><br><span class="line">cd opencv</span><br><span class="line">git checkout 3.4.3</span><br><span class="line">cd ..</span><br><span class="line">git clone https://github.com/opencv/opencv_contrib.git</span><br><span class="line">cd opencv_contrib</span><br><span class="line">git checkout 3.4.3</span><br><span class="line">cd ..</span><br></pre></td></tr></table></figure></p>
+<p>在opencv3.4.3目录下新建build目录(如mingw_build)<br>前期准备工作就绪</p>
+<h2 id="配置cmake-gui"><a href="#配置cmake-gui" class="headerlink" title="配置cmake-gui"></a>配置cmake-gui</h2><ol>
+<li>打开CMakeLists.txt，在最前面添加两行:<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">set(CMAKE_CXX_FLAGS $&#123;CMAKE_CXX_FLAGS&#125; &quot;-Wa,-mbig-obj&quot;)</span><br><span class="line">set(CMAKE_C_FLAGS $&#123;CMAKE_C_FLAGS&#125; &quot;-Wa,-mbig-obj&quot;)</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>以上是为了防止编译时报错too many sections。</p>
+<ol>
+<li>打开cmake-gui。</li>
+<li>在<em>Where is the source code</em>一栏选中<code>.../opencv3.4.3/opencv</code>，即opencv的目录。</li>
+<li>在<em>Where to build the binaries</em>一栏选中<code>.../opencv3.4.3/mingw_build</code>，即之前新建的build目录。</li>
+<li>点击Configure，会提示选择generator，选择MinGW Makefiles，点击finish会开始generate，经过一段时间后会显示configuring done，此时cmake的配置项很多会显示红色，如下图所示。<img src="/2019/07/08/Windows10下编译opencv3-4-3（支持Nonfree）/configure.png" title="CMake configure"></li>
+<li>再次点击configure，红色会消失。</li>
+<li>接下来更改cmake的配置项，共改四个地方，第一是勾选OPENCV_ENABLE_NONFREE，第二是设置OPENCV_EXTRA_MODULES_PATH为<code>.../opencv-3.4.3/opencv_contrib/modules</code>，第三个是去掉勾选ENABLE_PRECOMPILED_HEADERS(不去掉后面可能会报错)，第四是设置CMAKE_BUILD_TYPE的值为Debug<br>如下图所示：<img src="/2019/07/08/Windows10下编译opencv3-4-3（支持Nonfree）/configures.png" title="CMake configures"></li>
+<li>更改完成后，再次configure两次。</li>
+<li>configuring done后点击generate，等待generating done。<h2 id="编译、安装"><a href="#编译、安装" class="headerlink" title="编译、安装"></a>编译、安装</h2>在<code>mingw_build</code>目录下右键Git Bash Here，开始编译：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mingw32-make -j8</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>编译过程中可能还会遇到一些错误，可参考<a href="https://blog.csdn.net/lostpen/article/details/87998053" target="_blank" rel="noopener">这篇博客</a><br>重新走一遍上述cmake-gui的配置流程。<br>编译完成后，执行安装：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mingw32-make install</span><br></pre></td></tr></table></figure></p>
+<h2 id="测试安装"><a href="#测试安装" class="headerlink" title="测试安装"></a>测试安装</h2><p>测试程序：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;opencv2/opencv.hpp&gt;</span><br><span class="line"></span><br><span class="line">using namespace cv;</span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">    Mat image = imread(&quot;../lena.jpg&quot;, CV_LOAD_IMAGE_UNCHANGED);</span><br><span class="line">    if(image.empty())</span><br><span class="line">    &#123;</span><br><span class="line">        cout &lt;&lt; &quot;Can&apos;t read images&quot; &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">    namedWindow(&quot;lena&quot;, cv::WINDOW_NORMAL);</span><br><span class="line">    imshow(&quot;lena&quot;, image);</span><br><span class="line">    cvWaitKey();</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>CMakeLists文件如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required(VERSION 3.14)</span><br><span class="line"></span><br><span class="line">project(test_opencv)</span><br><span class="line">SET(CMAKE_BUILD_TYPE &quot;Debug&quot;)</span><br><span class="line"></span><br><span class="line">set(OpenCV_DIR &quot;D:\\SOFTWARE\\opencv-3.4.3\\mingw_build\\install&quot;)</span><br><span class="line">find_package( OpenCV REQUIRED )</span><br><span class="line"></span><br><span class="line">aux_source_directory( . DIR_SRCS )</span><br><span class="line">add_executable($&#123;PROJECT_NAME&#125; $&#123;DIR_SRCS&#125; )</span><br><span class="line"></span><br><span class="line">target_link_libraries( image_stitching $&#123;OpenCV_LIBS&#125; )</span><br></pre></td></tr></table></figure></p>
+<p>CMakeLists中更改OPENCV_DIR的路径为自己opencv的安装路径。<br>成功显示图片，说明opencv安装成功。<br><img src="/2019/07/08/Windows10下编译opencv3-4-3（支持Nonfree）/lena.png" title="lena display"></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://ylwitan.github.io/2019/05/24/Ubuntu下源码编译opencv-支持Nonfree和CUDA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1355,7 +1538,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-count">6</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1569,6 +1752,8 @@
 
   
   
+    
+      
     
       
     
