@@ -340,6 +340,187 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://ylwitan.github.io/2019/12/19/Dijkstra算法（优先队列）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ywt">
+      <meta itemprop="description" content="输出知识是巩固知识的有效方式">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="blog-ywt">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/12/19/Dijkstra算法（优先队列）/" class="post-title-link" itemprop="url">Dijkstra算法（优先队列）</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-12-19 12:03:10" itemprop="dateCreated datePublished" datetime="2019-12-19T12:03:10+08:00">2019-12-19</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>Dijkstra算法只能求取边的权重为非负的图的最短路径，而Bellman-Ford算法可以求取边的权重为负的图的最短路径（但Bellman-Ford算法在图中存在负环的情况下，最短路径是不存在的）。</p>
+<h2 id="算法原理"><a href="#算法原理" class="headerlink" title="算法原理"></a>算法原理</h2><p>Dijkstra算法本质上是一种贪心算法，1959年，Edsger Dijkstra提出了该算法用于解决单源最短路径问题，即在给定每条边的长度$\mathcal{l}$，求取源节点s到其它所有节点的最短路径。</p>
+<p>Dijkstra算法维护一个节点集合S，S中的节点到源点的最短距离d已经确定了，即“Explored”。</p>
+<p>初始化时，S={s},d(v)=0，接下来，对于每一个节点<script type="math/tex">v\in V-S</script>，选出到集合S的距离最近的节点$v^*$，即最小化下面这个问题：</p>
+<script type="math/tex; mode=display">
+d'(v)=\min_{e=(u,v):u\inS}d(u,v)+\mathcal{l}_e</script><p>我们将$v^<em>$加入到节点S，并定义$d(v^</em>)=d’(v^*)$。</p>
+<p>算法伪代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Dijkstra算法(G,$\mathcal&#123;l&#125;$):</span><br><span class="line">令S表示“Explored”的节点：</span><br><span class="line">    对于S中的每个节点，保存其到源点s的最短距离d(v)</span><br><span class="line">初始化S=&#123;s&#125;, d(s)=0</span><br><span class="line">while$$S\neqV$$:</span><br><span class="line">    选择最小化下列问题的节点$v^*$</span><br><span class="line">        $$d&apos;(v)=\min_&#123;e=(u,v):u\inS&#125;d(u,v)+\mathcal&#123;l&#125;_e$$</span><br><span class="line">    把节点$v^*$加入到集合S中，并定义$d(v^*)=d&apos;(v)$</span><br><span class="line">Endwhile</span><br></pre></td></tr></table></figure></p>
+<h2 id="朴素实现"><a href="#朴素实现" class="headerlink" title="朴素实现"></a>朴素实现</h2><h2 id="优先队列实现"><a href="#优先队列实现" class="headerlink" title="优先队列实现"></a>优先队列实现</h2><h4 id="三级标题"><a href="#三级标题" class="headerlink" title="三级标题"></a>三级标题</h4><h4 id="四级标题"><a href="#四级标题" class="headerlink" title="四级标题"></a>四级标题</h4><h5 id="五级标题"><a href="#五级标题" class="headerlink" title="五级标题"></a>五级标题</h5><h6 id="六级标题"><a href="#六级标题" class="headerlink" title="六级标题"></a>六级标题</h6><p><strong>文字加粗</strong><br><em>斜体</em><br>无序列表 </p>
+<ul>
+<li>1 a</li>
+<li>2 b</li>
+<li>3 c  </li>
+</ul>
+<p>有序列表：</p>
+<ol>
+<li>a</li>
+<li>b</li>
+<li>c</li>
+</ol>
+<p>引用: &gt; 引用内容<br> 只有这样引用才能保证首页和文章页都能正常显示图片，照片源文件需要放在_posts目录下与.md同名的目录下<br>链接： <a href="链接地址">链接名称</a><br>例：<a href="http://www.jianshu.com" target="_blank" rel="noopener">简书</a><br>分割线：</p>
+<hr>
+<p>行内代码块：<code>code block</code><br>行间代码块：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">code block</span><br></pre></td></tr></table></figure></p>
+<p>列表：<br>命令 | 作用 | 简写<br>:-: | :-: | :-:<br>hexo init “folder-name” | 新建一个网站 | |<br>hexo new “title-name” | 新建一篇文章 |<br>hexo generate | 生成静态文件 | hexo g |<br>hexo server | 启动服务器，默认服务器网址：<a href="http://localhost:4000/" target="_blank" rel="noopener">http://localhost:4000/</a> | hexo s|<br>hexo deploy | 部署网站 | hexo d|<br>hexo clean | 清楚缓存文件 |</p>
+<p>数学公式支持：</p>
+<script type="math/tex; mode=display">
+    \frac{\partial f(\mathbf{x})}{\partial\mathbf{x}}</script>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://ylwitan.github.io/2019/07/08/Windows10下编译opencv3-4-3（支持Nonfree）/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1538,7 +1719,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-count">7</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1561,7 +1742,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">3</span>
+                      
+                    
+                    <span class="site-state-item-count">4</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -1754,17 +1937,19 @@
   
     
       
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
         
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
       
     
   
